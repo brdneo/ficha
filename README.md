@@ -1,1 +1,1 @@
-Thanks to Brysah Vidal for all the support and for making the project real.
+Thanks to <a href="https://brysah.webflow.io/">Brysah Vidal</a> for all the support and for making the project real.
