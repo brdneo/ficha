@@ -439,6 +439,7 @@ button {
     padding-bottom: 3.4rem;
     background-image: url("../img/linha-parecer.png");
     -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
     background-repeat: repeat-y, repeat;
     border-radius: 1.2rem;
     border-top: 0.1rem solid #000;
@@ -751,6 +752,7 @@ button {
         background-repeat: repeat-y;
         background-size: 100% auto;
         -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
     .s-form .container .warning {
         margin-bottom: 0;

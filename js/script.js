@@ -25,18 +25,14 @@ document.addEventListener("DOMContentLoaded", function () {
     input.value = "/        /"; // Define o valor inicial como " / / "
 });
 
-function formatarCEP(input) {
-    var cep = input.value.replace(/\D/g, "");
-    cep = cep.replace(/^(\d{5})(\d)/, "$1-$2");
-    input.value = cep;
-}
-function formatarCNPJ(input) {
+function formatarCNPJInput(input) {
     var cnpj = input.value.replace(/\D/g, "");
     cnpj = cnpj.replace(/^(\d{2})(\d)/, "$1.$2");
     cnpj = cnpj.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
     cnpj = cnpj.replace(/\.(\d{3})(\d)/, ".$1/$2");
     cnpj = cnpj.replace(/(\d{4})(\d)/, "$1-$2");
-    input.value = cnpj;
+    input.value = cnpj; // Atualiza o valor do input com o CNPJ formatado
+    return cnpj; // Retorna o CNPJ formatado para ser usado em outras funções
 }
 
 const toggleButtons = document.querySelectorAll(".toggle-button");
@@ -70,3 +66,84 @@ select.addEventListener("change", function () {
         twoColumns.classList.remove("active");
     }
 });
+
+// Função para formatar o CNPJ
+function formatarCNPJApi(cnpj) {
+    cnpj = cnpj.replace(/\D/g, "");
+    return cnpj.replace(
+        /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
+        "$1.$2.$3/$4-$5"
+    );
+}
+
+// Função para formatar a data de abertura
+function formatarData(data) {
+    // Separa a data em partes (ano, mês, dia)
+    const partes = data.split("-");
+    // Reorganiza as partes para o formato desejado (DD/MM/AAAA)
+    return partes[2] + "/" + partes[1] + "/" + partes[0];
+}
+
+// Função para formatar o CEP
+function formatarCEP(input) {
+    var cep = input.value.replace(/\D/g, "");
+    cep = cep.replace(/^(\d{5})(\d)/, "$1-$2");
+    input.value = cep;
+}
+
+// Chamada da função para formatar o CEP após preencher o campo
+document
+    .querySelector('input[name="cep"]')
+    .addEventListener("input", function (event) {
+        formatarCEP(event.target);
+    });
+
+// Função para preencher os campos com base no CNPJ
+function preencherCampos(cnpj) {
+    fetch(`https://minhareceita.org/${cnpj}`)
+        .then((response) => response.json())
+        .then((data) => {
+            document.querySelector('input[name="titulo-03"]').value =
+                data.razao_social;
+            document.querySelector('input[name="titulo-04"]').value =
+                data.nome_fantasia;
+
+            let endereco = "";
+
+            // Verifica se há tipo de logradouro e adiciona ao endereço
+            if (data.descricao_tipo_de_logradouro && data.logradouro) {
+                endereco +=
+                    data.descricao_tipo_de_logradouro + " " + data.logradouro;
+            } else if (data.logradouro) {
+                endereco += data.logradouro;
+            }
+
+            // Adiciona complemento ao endereço, se disponível
+            if (data.complemento) {
+                endereco += ", " + data.complemento;
+            }
+
+            document.querySelector('input[name="endereco"]').value = endereco;
+
+            // Preenche o campo de CEP e formata automaticamente
+            let inputCEP = document.querySelector('input[name="cep"]');
+            inputCEP.value = data.cep;
+            formatarCEP(inputCEP);
+
+            document.querySelector('input[name="cidade"]').value =
+                data.municipio;
+            // Formata a data de abertura antes de atribuir ao campo
+            document.querySelector('input[name="data-empresa"]').value =
+                formatarData(data.data_inicio_atividade);
+            document.querySelector('input[name="bairro"]').value = data.bairro;
+        })
+        .catch((error) => console.error("Erro ao consultar CNPJ:", error));
+}
+
+// Event listener para o input de CNPJ
+document
+    .querySelector('input[name="cnpj"]')
+    .addEventListener("input", function (event) {
+        const cnpj = formatarCNPJInput(event.target);
+        preencherCampos(cnpj);
+    });
