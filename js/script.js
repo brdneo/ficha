@@ -130,8 +130,10 @@ function preencherCampos(cnpj) {
             inputCEP.value = data.cep;
             formatarCEP(inputCEP);
 
-            document.querySelector('input[name="cidade"]').value =
-                data.municipio;
+            // Concatena cidade com UF e preenche o campo
+            let cidadeUF = `${data.municipio}/${data.uf}`;
+            document.querySelector('input[name="cidade"]').value = cidadeUF;
+
             // Formata a data de abertura antes de atribuir ao campo
             document.querySelector('input[name="data-empresa"]').value =
                 formatarData(data.data_inicio_atividade);
@@ -147,3 +149,7 @@ document
         const cnpj = formatarCNPJInput(event.target);
         preencherCampos(cnpj);
     });
+
+// Concatena cidade com UF e preenche o campo
+let cidadeUF = `${data.municipio}/${data.uf}`;
+document.querySelector('input[name="cidade"]').value = cidadeUF;
