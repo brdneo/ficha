@@ -118,6 +118,11 @@ function preencherCampos(cnpj) {
                 endereco += data.logradouro;
             }
 
+            // Adiciona número do endereço, se disponível
+            if (data.numero) {
+            endereco += ", " + data.numero;
+            }
+
             // Adiciona complemento ao endereço, se disponível
             if (data.complemento) {
                 endereco += ", " + data.complemento;
