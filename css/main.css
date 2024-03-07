@@ -643,7 +643,7 @@ button {
 }
 @media print {
     .s-form {
-        margin-top: 3rem;
+        margin-top: 1rem;
     }
     .s-form .container .title-form {
         margin-bottom: 1.6rem;
